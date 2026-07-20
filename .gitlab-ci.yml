@@ -1,0 +1,27 @@
+stages:
+  - sync
+
+sync_to_target_repo:
+  stage: sync
+  tags:
+    - firefly-cicd
+    - docker
+  before_script:
+          - command -v ssh-agent >/dev/null || (apt-get update && apt-get install -y openssh-client)
+          - eval $(ssh-agent -s)
+          - mkdir -p ~/.ssh
+          - chmod 700 ~/.ssh
+          - chmod 600 $SSH_KEY
+          - ssh-add $SSH_KEY
+          - ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+          - chmod 644 ~/.ssh/known_hosts
+  script:
+    # 添加目标仓库
+    - git remote add target git@github.com:Firefly-docs/mainline-docs.git
+    # 推送当前分支到目标仓库的指定分支
+    - git push target HEAD:master
+
+    # 如果你想强制覆盖目标分支（慎用）
+    # - git push target $CI_COMMIT_REF_NAME:$TARGET_BRANCH --force
+  only:
+    - mainline-docs        # 只在 push 到 soc-docs 时触发
