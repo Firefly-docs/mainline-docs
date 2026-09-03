@@ -20,7 +20,7 @@ sync_to_target_repo:
     - git remote add target git@github.com:Firefly-docs/mainline-docs.git
     # 推送当前分支到目标仓库的指定分支
     - git push target HEAD:master
-    - eval "$MAINLINE_SYNC"
+    - sync.sh mainline
     # 如果你想强制覆盖目标分支（慎用）
     # - git push target $CI_COMMIT_REF_NAME:$TARGET_BRANCH --force
   only:
